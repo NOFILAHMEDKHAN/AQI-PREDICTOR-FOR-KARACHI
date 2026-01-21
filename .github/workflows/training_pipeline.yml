@@ -2,8 +2,8 @@ name: Daily Model Training
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # Runs at 00:00 (Midnight) UTC every day
-  workflow_dispatch:      # Allows you to click "Run Now" manually
+    - cron: '0 0 * * *'   # Runs at Midnight
+  workflow_dispatch:      # Allows manual run
 
 jobs:
   run-training-pipeline:
@@ -20,9 +20,10 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install --upgrade pip
-          pip install hopsworks pandas python-dotenv joblib scikit-learn requests numpy
+          pip install -r requirements.txt
+          pip install hopsworks==4.2.2 pyarrow
 
-      - name: Train All 3 Models
+      - name: Train All Models
         env:
           HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
         run: python src/training_pipeline.py
