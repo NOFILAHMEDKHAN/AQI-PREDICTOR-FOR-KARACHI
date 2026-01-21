@@ -1,0 +1,19 @@
+# Core Data Science (Pinned for compatibility)
+numpy==1.26.4
+pandas==2.1.4
+scikit-learn
+matplotlib
+seaborn
+xgboost
+joblib
+shap
+plotly
+
+# App & Web
+streamlit
+requests
+python-dotenv
+furl
+
+# Hopsworks (Strictly requires pandas < 2.2.0)
+hopsworks==4.2.2

@@ -1,0 +1,28 @@
+name: Hourly Data Fetch
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # Runs at minute 0 of every hour
+  workflow_dispatch:      # Allows you to click "Run Now" manually to test
+
+jobs:
+  run-feature-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install hopsworks pandas python-dotenv joblib scikit-learn requests numpy
+
+      - name: Run Hourly Data Fetch
+        env:
+          HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
+        run: python src/feature_pipeline.py
