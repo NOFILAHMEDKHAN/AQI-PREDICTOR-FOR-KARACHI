@@ -15,5 +15,6 @@ requests
 python-dotenv
 furl
 
-# Hopsworks (Strictly requires pandas < 2.2.0)
+# MLOps & Data Engine
 hopsworks==4.2.2
+pyarrow
