@@ -207,7 +207,7 @@ real_history = raw_data[raw_data['date'] <= current_time].sort_values("date")
 weather_forecast = get_weather_forecast()
 
 # --- DASHBOARD HEADER ---
-st.title("🏭 Karachi AQI Command Center")
+st.title("🏭 AQI PREDICTOR FOR KARACHI")
 st.markdown(f"**Live Status:** {current_time.strftime('%A, %d %B %Y | %H:%M')} &nbsp; | &nbsp; **Active Engine:** `{best_model['label']}`")
 
 # --- NAVIGATION TABS ---
