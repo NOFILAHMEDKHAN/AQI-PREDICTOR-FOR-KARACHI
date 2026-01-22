@@ -190,7 +190,7 @@ models.sort(key=lambda x: x['r2'], reverse=True)
 best_model = models[0]
 
 # --- LOAD AND RENAME DATA ---
-raw_data = fg.select_all().read()
+raw_data = fg.select_all().read(read_options={"use_hive": True})
 
 # 1. Convert timestamp and rename to 'date'
 if 'timestamp' in raw_data.columns:
