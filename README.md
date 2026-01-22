@@ -1,4 +1,4 @@
-# 🇵🇰 Karachi Live Air Quality AI
+# AQI PREDICTOR FOR KARACHI
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/)
 ![Python](https://img.shields.io/badge/Python-3.9-blue?style=for-the-badge&logo=python)
