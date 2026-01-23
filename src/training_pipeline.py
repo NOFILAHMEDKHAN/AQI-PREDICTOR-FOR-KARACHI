@@ -129,7 +129,7 @@ def train_smart_models():
         y_test_cat = pd.cut(y_test.values.ravel(), bins=bins, labels=labels)
         preds_cat = pd.cut(preds, bins=bins, labels=labels)
         
-        print(f"      🚦 Alert Classification Report:")
+        print(f"🚦 Alert Classification Report:")
         # We print a simplified report to the console
         cls_report = classification_report(y_test_cat, preds_cat, labels=labels, zero_division=0)
         print("\n".join(["      " + line for line in cls_report.split("\n")]))
@@ -148,7 +148,7 @@ def train_smart_models():
             input_example=input_example
         )
         mr_model.save(path)
-        print(f"      📤 Registered {name} to Hopsworks")
+        print(f"  📤 Registered {name} to Hopsworks")
 
     print("\n✅ SUCCESS! All models trained, evaluated, and pushed.")
 

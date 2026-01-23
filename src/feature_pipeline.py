@@ -107,10 +107,11 @@ def main():
             description="High-Impact AQI Data",
             online_enabled=True
         )
+        # The "wait_for_job=False" part tells Python:
+        # "Upload the data and finish immediately. Don't wait for the server."
+        aqi_fg.insert(clean_data, write_options={"wait_for_job": False})
         
-        aqi_fg.insert(clean_data)
         print("✅ Success! Data is stored and ready.")
-        
     except Exception as e:
         print(f"🚨 Pipeline Failed: {e}")
 
