@@ -2,7 +2,8 @@
 
 **Project Title:** AQI PREDICTOR FOR KARACHI
 
-**Author:** Nofil Ahmed Khan
+**Author:** Nofil Ahmed Khan 
+
 **Internship Organization:** 10PEARLS PAKISTAN
 
 ---
