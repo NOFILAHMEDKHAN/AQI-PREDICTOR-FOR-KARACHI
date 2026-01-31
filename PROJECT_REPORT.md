@@ -880,6 +880,86 @@ fg = fs.create_feature_group(
 
 ---
 
+### 10.6 Challenge 6: GitHub Actions Pipeline Collision
+
+**Problem:**
+
+The `training_pipeline.yml` workflow was **failing consistently** on GitHub Actions (automated runs) but worked perfectly when triggered manually via `workflow_dispatch`. 
+
+**Error Log:**
+```
+FeatureStoreException: Feature group data is incomplete or locked
+Connection timeout when reading from Hopsworks
+```
+
+**Root Cause:**
+
+Both the **Feature Pipeline** and **Training Pipeline** were scheduled to run at exactly **midnight (00:00 UTC)**:
+```yaml
+# feature_pipeline.yml
+- cron: '0 * * * *'   # Runs every hour (including 00:00)
+
+# training_pipeline.yml  
+- cron: '0 0 * * *'   # Runs at midnight (00:00)
+```
+
+This created a **race condition**: The training pipeline tried to read data from the Feature Store while the feature pipeline was still in the middle of uploading it, resulting in corrupted or locked data access.
+
+**Diagnosis
+name: Daily Model Training
+
+on:
+  schedule:
+    - cron: '30 0 * * *'   # ✅ FIXED: Runs at 00:30 UTC (30 min after data ingestion)
+  workflow_dispatch:
+
+jobs:
+  run-training-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install hopsworks==4.2.2 pyarrow
+
+      - name: Train All Models
+        env:
+          HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
+        run: python src/training_pipeline.py
+```
+
+**Why This Works:**
+
+- **00:00 - 00:10 UTC**: Feature pipeline fetches and uploads data
+- **00:10 - 00:30 UTC**: Buffer period (data settles in Feature Store)
+- **00:30 - 01:00 UTC**: Training pipeline reads stable data and trains models
+
+**Testing:**
+
+After implementing the fix:
+1. Monitored GitHub Actions for 7 consecutive days
+2. All automated runs succeeded (100% success rate)
+3. No more timeout or data lock errors
+
+**Lesson Learned:**
+
+In MLOps pipelines with sequential dependencies:
+- **Never schedule dependent jobs at the same time**
+- Always add buffer periods (5-30 minutes) between data write and read operations
+- Test automated workflows for at least 3-7 days to catch timing issues
+- Use `workflow_dispatch` for debugging (bypasses timing constraints)
+
+---
+
 ## 11. Results & Performance Analysis
 
 ### 11.1 Final Metrics (Current Champion: XGBoost)
