@@ -149,7 +149,7 @@ A clean, modular directory structure adhering to PEP-8 standards and MLOps best 
 AQI-PREDICTOR-FOR-KARACHI/
 ├── .github/workflows/           # 🤖 CI/CD Automation Robots
 │   ├── feature_pipeline.yml     # Hourly Data Ingestion (Cron: 0 * * * *)
-│   └── training_pipeline.yml    # Daily Model Retraining (Cron: 0 0 * * *)
+│   └── training_pipeline.yml    # Daily Model Retraining (Cron: 30 0 * * * - Staggered 30m to avoid overlap) 
 │
 ├── app/                         # 🎨 Frontend Application
 │   └── streamlit_app.py         # Interactive Dashboard with SHAP Analysis
