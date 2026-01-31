@@ -21,12 +21,17 @@ st.set_page_config(
 )
 load_dotenv()
 
-# --- 2. PROFESSIONAL STYLING (CSS) ---
+# --- 2. PROFESSIONAL STYLING (CSS - FIXED FOR DARK MODE) ---
 st.markdown("""
 <style>
     .big-font { font-size: 18px !important; }
-    div[data-testid="stMetricValue"] { font-size: 24px; color: #0E1117; }
+    
+    /* ✅ Fixed: Removed 'color: black' so it adapts to Dark Mode */
+    div[data-testid="stMetricValue"] { font-size: 24px; } 
+    
     .stAlert { padding: 10px; border-radius: 5px; }
+    
+    /* Card styling that adapts to theme */
     div.css-1r6slb0.e1tzin5v2 {
         background-color: #f0f2f6;
         border: 1px solid #d6d6d6;
@@ -202,7 +207,19 @@ else:
 # 2. Sort
 raw_data = raw_data.sort_values('date')
 
-current_time = pd.Timestamp.now().replace(microsecond=0)
+# ---------------------------------------------------------
+# 🔧 TIMEZONE FIX: Force Karachi Time (PKT)
+# ---------------------------------------------------------
+# 1. Get UTC time
+now_utc = pd.Timestamp.now(tz='UTC')
+
+# 2. Convert to Karachi (PKT)
+now_pkt = now_utc.tz_convert('Asia/Karachi')
+
+# 3. Remove timezone info so it matches your Dataframe (Naive format)
+current_time = now_pkt.replace(tzinfo=None, microsecond=0)
+# ---------------------------------------------------------
+
 real_history = raw_data[raw_data['date'] <= current_time].sort_values("date")
 weather_forecast = get_weather_forecast()
 
@@ -243,7 +260,7 @@ with tab_forecast:
         rain_val = latest['rain'] if 'rain' in latest else 0
         c4.metric("Precipitation", f"{rain_val} mm")
 
-        # --- [NEW] GAUGE CHART (VISUAL UPGRADE) ---
+        # --- GAUGE CHART (VISUAL UPGRADE) ---
         fig_gauge = go.Figure(go.Indicator(
             mode = "gauge+number+delta",
             value = aqi_now,
@@ -308,7 +325,7 @@ with tab_forecast:
                     st.metric("Avg Predicted AQI", f"{val_int}", delta=class_label, delta_color="off")
 
 # =========================================================
-# TAB 2: MODEL EVALUATION (FIXED LOGIC)
+# TAB 2: MODEL EVALUATION
 # =========================================================
 with tab_eval:
     st.header("⚔️ Model Battle Arena")
