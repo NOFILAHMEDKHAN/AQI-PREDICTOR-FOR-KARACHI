@@ -2,8 +2,8 @@ name: Daily Model Training
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # Runs at Midnight
-  workflow_dispatch:      # Allows manual run
+    - cron: '30 0 * * *'   # CHANGED: Runs at 12:30 AM (Safe from clash)
+  workflow_dispatch:       # Allows manual run
 
 jobs:
   run-training-pipeline:
