@@ -7,6 +7,8 @@
 ![GitHub Actions](https://img.shields.io/badge/MLOps-Automated-2088FF?style=for-the-badge&logo=github-actions)
 ![Status](https://img.shields.io/badge/Pipeline-Operational-success?style=for-the-badge)
 
+### 🚀 [Click Here to View Live Demo App](https://aqi-predictor-for-karachi-guoxl6zgh5xqtvoirtiwmc.streamlit.app/)
+
 > **"A fully autonomous, self-correcting Artificial Intelligence that predicts Karachi's Air Quality Index (AQI) with 93.5% accuracy."**
 
 ---
@@ -227,7 +229,7 @@ on:
 ```yaml
 on:
   schedule:
-    - cron: '0 0 * * *'  # Midnight UTC
+       - cron: '30 0 * * *'   # Midnight Runs at 12:30 AM
 ```
 - Loads last 90 days of data
 - Trains all three models in parallel
