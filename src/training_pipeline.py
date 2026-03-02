@@ -15,13 +15,16 @@ API_KEY = os.getenv("HOPSWORKS_API_KEY")
 
 def train_smart_models():
     print("🔗 Connecting to Hopsworks...")
-    project = hopsworks.login(api_key_value=API_KEY)
+    project = hopsworks.login(
+        host="eu-west.cloud.hopsworks.ai",
+        api_key_value=API_KEY
+    )
     fs = project.get_feature_store()
     mr = project.get_model_registry()
 
     # --- 1. CONFIGURATION ---
     fg_name = "karachi_aqi_pro"
-    fg_version = 3
+    fg_version = 1
     
     # Unique ID to ensure fresh View every time
     unique_id = int(time.time())
@@ -33,8 +36,10 @@ def train_smart_models():
     # --- 2. GET FEATURE GROUP ---
     try:
         fg = fs.get_feature_group(fg_name, fg_version)
-    except:
+        print(f"✅ Feature Group '{fg_name}' (v{fg_version}) found.")
+    except Exception as e:
         print(f"❌ ERROR: Feature Group '{fg_name}' (v{fg_version}) not found. Run feature_pipeline.py first.")
+        print(f"   Detail: {e}")
         return
 
     # --- 3. CREATE FEATURE VIEW ---
@@ -61,9 +66,9 @@ def train_smart_models():
 
     # --- 4. CREATE & LOAD TRAINING DATA (FIXED) ---
     print("📊 Fetching Training Data (In-Memory)...")
-    
-    # ✅ FIX: We fetch data directly to memory using Hive (Port 443)
-    # This bypasses the 'wait_for_job' timeout issues entirely.
+    print("⏳ Waiting for feature group materialization to complete...")
+    time.sleep(60)  # Wait 60 seconds for Hudi materialization to finish
+
     X_train, X_test, y_train, y_test = feature_view.train_test_split(
         test_size=0.2,
         read_options={"use_hive": True}
@@ -108,7 +113,7 @@ def train_smart_models():
         mr_model = mr.python.create_model(
             name=name,
             metrics={"r2": r2, "rmse": rmse, "mae": mae},
-            description=f"Smart Model v3 (w/ Rain & Vectors)",
+            description=f"Smart Model v1 (w/ Rain & Vectors)",
             input_example=input_example
         )
         mr_model.save(path)

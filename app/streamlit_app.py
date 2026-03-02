@@ -45,16 +45,19 @@ st.markdown("""
 @st.cache_resource
 def init_hopsworks(key):
     try:
-        project = hopsworks.login(api_key_value=key)
+        project = hopsworks.login(
+            host="eu-west.cloud.hopsworks.ai",
+            api_key_value=key
+        )
         fs = project.get_feature_store()
         mr = project.get_model_registry()
         
-        # Connect to Feature Group (Version 3)
+        # Connect to Feature Group (Version 1)
         try:
-            fg = fs.get_feature_group(name="karachi_aqi_pro", version=3)
-        except:
-            st.warning("⚠️ Using Fallback Data (Version 1). Run feature_pipeline.py v3 for best results.")
             fg = fs.get_feature_group(name="karachi_aqi_pro", version=1)
+        except:
+            st.warning("⚠️ Using Fallback Data (Version 3). Run feature_pipeline.py v1 for best results.")
+            fg = fs.get_feature_group(name="karachi_aqi_pro", version=3)
         
         # Load ALL Models for Comparison
         models = []

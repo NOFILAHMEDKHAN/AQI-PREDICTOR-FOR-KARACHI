@@ -92,11 +92,14 @@ def main():
         clean_data = engineer_features(raw_data)
         
         print("☁️  Connecting to Hopsworks...")
-        project = hopsworks.login(api_key_value=API_KEY)
+        project = hopsworks.login(
+            host="eu-west.cloud.hopsworks.ai",
+            api_key_value=API_KEY
+        )
         fs = project.get_feature_store()
         
         fg_name = "karachi_aqi_pro"
-        version = 3
+        version = 1
         
         print(f"📤 Uploading processed data to {fg_name} (v{version})...")
         aqi_fg = fs.get_or_create_feature_group(
