@@ -16,5 +16,5 @@ python-dotenv
 furl
 
 # MLOps & Data Engine
-hopsworks
+hopsworks==4.7.2
 pyarrow
