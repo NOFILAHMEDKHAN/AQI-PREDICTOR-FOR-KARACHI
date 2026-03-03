@@ -402,12 +402,20 @@ with tab_analysis:
     if st.button("🚀 Calculate SHAP Values (Takes 10s)"):
         with st.spinner("Calculating SHAP values..."):
             try:
-                # 1. Initialize Explainer (Modern API)
-                # TreeExplainer is fast for XGBoost/RandomForest
-                explainer = shap.TreeExplainer(best_model['model'])
-                
-                # 2. Calculate SHAP values (Returns Explanation Object)
-                shap_values = explainer(X_sample)
+                # -------------------------------------------------------------
+                # 🛠️ FIXED: DYNAMIC SHAP EXPLAINER SELECTION
+                # This prevents crashing if Ridge Regression (Linear) is selected
+                # -------------------------------------------------------------
+                if best_model['type'] == "Tree":
+                    # For XGBoost / Random Forest
+                    explainer = shap.TreeExplainer(best_model['model'])
+                    shap_values = explainer(X_sample)
+                else:
+                    # For Ridge Regression / Linear Models
+                    # LinearExplainer is optimized for linear models
+                    explainer = shap.LinearExplainer(best_model['model'], X_sample)
+                    shap_values = explainer(X_sample)
+                # -------------------------------------------------------------
                 
                 c1, c2 = st.columns(2)
                 
@@ -446,6 +454,13 @@ with tab_analysis:
                     imp_df = pd.DataFrame({'Feature': valid_cols, 'Importance': imp}).sort_values('Importance', ascending=True)
                     fig_imp = px.bar(imp_df, x='Importance', y='Feature', orientation='h',
                                      color='Importance', color_continuous_scale='Viridis')
+                    st.plotly_chart(fig_imp, use_container_width=True)
+                elif hasattr(best_model['model'], 'coef_'):
+                    # Fallback for Ridge coefficients if SHAP fails entirely
+                    imp = np.abs(best_model['model'].coef_)
+                    imp_df = pd.DataFrame({'Feature': valid_cols, 'Importance': imp}).sort_values('Importance', ascending=True)
+                    fig_imp = px.bar(imp_df, x='Importance', y='Feature', orientation='h',
+                                     color='Importance', color_continuous_scale='Viridis', title="Feature Coefficients (Magnitude)")
                     st.plotly_chart(fig_imp, use_container_width=True)
     else:
         st.info("Click the button above to run the deep SHAP analysis.")
