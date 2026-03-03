@@ -20,7 +20,8 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install --upgrade pip
-          pip install hopsworks pandas python-dotenv joblib scikit-learn requests numpy pyarrow
+          pip install -r requirements.txt
+          pip install "hopsworks==4.7.*" requests pandas numpy python-dotenv
 
       - name: Run Hourly Data Fetch
         env:
